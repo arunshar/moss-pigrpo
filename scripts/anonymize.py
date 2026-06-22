@@ -152,6 +152,11 @@ def anon_readme(src_root):
     # Safety scrub of the handle in case any URL is added later; the source README
     # currently contains none, so this is usually a no-op.
     text = text.replace(HANDLE, "ANONYMOUS")
+    # The anon notebook's first cell does not clone; keep the file list consistent.
+    text = text.replace(
+        "one-click `clone + install + run` that prints both tables with no uploads",
+        "one-click `install + run` (no clone; runs from the uploaded files) that prints both tables",
+    )
     return ANON_BANNER + text
 
 
