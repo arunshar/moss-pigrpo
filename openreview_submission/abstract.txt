@@ -1,0 +1,8 @@
+TITLE
+Physics as a Hard Reward Floor: A Small-Scale, Controlled Study of Reward-Hacking Mitigation in RL Post-Training
+
+KEYWORDS
+reward hacking, RL post-training, GRPO, DPO, PPO, safety, small scale
+
+ABSTRACT
+Reinforcement-learning post-training optimizes a reward that scores surface form, so a fluent but physically impossible completion can be rewarded by a rater yet is operationally wrong, a reward-hacking failure. We study a simple structural defense at small scale: an unbounded hard penalty on physical-law violations, added to the reward so that a single sustained violation dominates any preference signal, exposed to PPO, DPO, and GRPO through one shared reward path. A model-agnostic, CPU-only probe makes the effect exact: a preference-only reward never flags an infeasible completion (0/5 caught), while the unbounded physics term catches every one (5/5) without touching feasible completions. During a short GRPO run on a 0.5B model, the preference-only reward hacks the policy (hard-violation rate rises from 0.58 to 1.00) while the unbounded physics floor drives it to zero (0.50 to 0.00); everything reproduces in a released free-Colab notebook under 10^15 FLOPs.

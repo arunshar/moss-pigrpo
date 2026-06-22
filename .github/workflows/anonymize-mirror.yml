@@ -1,0 +1,58 @@
+name: anonymize-mirror
+
+# Keep the anonymized mirror in sync. On every push to main this rebuilds the
+# scrubbed tree with scripts/anonymize.py, verifies no author identifier survived,
+# and force-pushes it to the anonymized repo as a single "Anonymous" commit so the
+# mirror never carries real-name history.
+#
+# One-time setup: add a repository secret named MIRROR_PAT (a GitHub token with
+# write access to the mirror repo). If the secret is absent the job skips cleanly
+# instead of failing. The same personal access token used for the portfolio mirror
+# works here; it just has to be added to THIS repo's Actions secrets.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+env:
+  MIRROR_REPO: arunshar/moss-pigrpo-anon
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Build anonymized tree
+        run: |
+          python3 scripts/anonymize.py --src . --out build/anon
+          python3 scripts/anonymize.py --check build/anon
+
+      - name: Push to anonymized mirror
+        env:
+          MIRROR_PAT: ${{ secrets.MIRROR_PAT }}
+        run: |
+          if [ -z "$MIRROR_PAT" ]; then
+            echo "MIRROR_PAT secret not set; skipping the mirror push."
+            echo "Add it under Settings -> Secrets and variables -> Actions to enable auto-sync."
+            exit 0
+          fi
+          cd build/anon
+          git init -q -b main
+          git config user.name "Anonymous"
+          git config user.email "anon@example.com"
+          git add -A
+          git commit -q -m "Anonymized snapshot for MOSS @ COLM 2026 double-blind review"
+          git push -q --force \
+            "https://x-access-token:${MIRROR_PAT}@github.com/${MIRROR_REPO}.git" main
+          echo "Mirrored to ${MIRROR_REPO}."
