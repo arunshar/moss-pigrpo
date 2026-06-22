@@ -28,14 +28,24 @@
 
 \newtheorem{proposition}{Proposition}
 
-% Dense single-column layout: tighten float, display, and list spacing only
-% (no change to font size or margins, so the template geometry is preserved).
-\setlength{\textfloatsep}{7pt plus 2pt minus 2pt}
-\setlength{\intextsep}{6pt plus 2pt minus 2pt}
-\setlength{\abovedisplayskip}{4pt plus 2pt minus 1pt}
-\setlength{\belowdisplayskip}{4pt plus 2pt minus 1pt}
-\setlength{\abovedisplayshortskip}{2pt plus 1pt}
-\setlength{\belowdisplayshortskip}{2pt plus 1pt}
+% Dense single-column layout: tighten float, display, section, and paragraph
+% spacing only (no change to font size or margins, so the template geometry and
+% the ICML heading format are preserved). Also shorten the under-review notice.
+\setlength{\textfloatsep}{5pt plus 2pt minus 2pt}
+\setlength{\intextsep}{5pt plus 2pt minus 2pt}
+\setlength{\abovedisplayskip}{3pt plus 1pt minus 1pt}
+\setlength{\belowdisplayskip}{3pt plus 1pt minus 1pt}
+\setlength{\abovedisplayshortskip}{1.5pt plus 1pt}
+\setlength{\belowdisplayshortskip}{1.5pt plus 1pt}
+\setlength{\parskip}{0pt}
+\setlength{\abovecaptionskip}{3pt}
+\setlength{\belowcaptionskip}{0pt}
+\makeatletter
+\def\section{\@startsection{section}{1}{\z@}{-0.055in}{0.008in}{\large\bf\raggedright}}
+\def\subsection{\@startsection{subsection}{2}{\z@}{-0.05in}{0.006in}{\normalsize\bf\raggedright}}
+\def\paragraph{\@startsection{paragraph}{4}{\z@}{0.6ex plus 0.3ex minus .1ex}{-1em}{\normalsize\bf}}
+\renewcommand{\Notice@String}{Under review.}
+\makeatother
 
 \newcommand{\E}{\mathbb{E}}
 \newcommand{\Bpref}{B_{\mathrm{pref}}}
@@ -66,7 +76,7 @@
 \icmlaffiliation{anon}{Anonymous Institution}
 \icmlcorrespondingauthor{Anonymous Author(s)}{anon@example.com}
 \icmlkeywords{reward hacking, RL post-training, GRPO, DPO, PPO, safety, small scale}
-\vskip 0.3in
+\vskip 0.12in
 
 \printAffiliationsAndNotice{}
 
