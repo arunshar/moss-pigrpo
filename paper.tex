@@ -90,7 +90,7 @@ A reinforcement-learning (RL) post-training pipeline is only as trustworthy as i
 This failure, and its mitigation, is well suited to study at \emph{small scale}. The mechanism does not depend on model size: the reward operates on the physical interpretation of a completion, so a controlled probe can isolate it on CPU with no model at all, and a small (at most 3B) policy is enough to show the effect during training. Small scale also lets us iterate quickly and report exact, reproducible numbers rather than chase leaderboard performance. This matches the workshop's spirit: an algorithmic method and a clean diagnosis of a failure mode, under a tight compute budget.
 
 \paragraph{Contributions.}
-(i) A structural reward-hacking defense: an \emph{unbounded} hard penalty on physical-law violations, with a dominance argument showing one violation cannot be outweighed by any bounded preference term (Section~\ref{sec:method}). (ii) A model-agnostic, CPU-only reward-hacking \emph{probe} that quantifies the failure and its fix (Section~\ref{sec:probe}), reproducible in a free Colab notebook. (iii) A single reward surface shared by PPO, DPO, and GRPO, so the same physics term plugs into three trainers. (iv) Measured guardrail, hot-path-cost, and small-scale GRPO training results with reported FLOP budgets and a released notebook artifact; the larger-model policy run is kept separate and reported only as diagnostic targets.
+(i) A structural reward-hacking defense: an \emph{unbounded} hard penalty on physical-law violations, with a dominance argument showing one violation cannot be outweighed by any bounded preference term (Section~\ref{sec:method}). (ii) A model-agnostic, CPU-only reward-hacking \emph{probe} that quantifies the failure and its fix, reproducible in a free Colab notebook. (iii) A single reward surface shared by PPO, DPO, and GRPO, so the same physics term plugs into three trainers. (iv) Measured guardrail, hot-path-cost, and small-scale GRPO training results with reported FLOP budgets and a released notebook artifact; the larger-model policy run is kept separate and reported only as diagnostic targets.
 
 \section{Method}
 \label{sec:method}
@@ -155,9 +155,8 @@ with loss $-\log\sigma(\Delta)$, so $\gamma_{\mathrm{phys}}=0$ recovers vanilla 
 \end{algorithmic}
 \end{algorithm}
 
-\section{The Reward-Hacking Probe}
-\label{sec:probe}
-The probe isolates the mechanism without training and without a large model. We construct a small set of completions, some feasible (inside the S-KBM envelope) and some infeasible (a fluent trajectory that exceeds the envelope, e.g.\ speed well above $v_{\max}$), and give each a high preference score, modeling a rater that rewards fluency. We then score them under two reward configurations; Table~\ref{tab:probe} reports the mean total reward on the infeasible completions and the catch rate (the fraction flagged as violations).
+\paragraph{The Reward-Hacking Probe}
+The probe isolates the mechanism without training and without a large model. We construct a small set of completions, some feasible (inside the S-KBM envelope) and some infeasible (a fluent trajectory that exceeds the envelope, e.g.\ speed well above $v_{\max}$), and give each a high preference score, modeling a rater that rewards fluency. We then score them under two reward configurations; Table~\ref{tab:probe} reports the mean total reward on the infeasible completions and the catch rate (the fraction flagged as violations). The result is stark and model-free: turning on the unbounded physics term moves an infeasible completion from $+10.0$ (indistinguishable from feasible) to $-490.5$ (ranked below every feasible output), and the catch rate goes from 0/5 to 5/5. Because the probe is pure CPU and depends only on the reward, it is fully reproducible in a free-tier notebook and transfers unchanged across model sizes.
 
 \begin{table}[t]
 \centering
@@ -173,8 +172,6 @@ Physics-grounded ($w_{\mathrm{hard}}=5$, default)  & $-490.5$ & \textbf{5/5 \,(1
 \bottomrule
 \end{tabular}
 \end{table}
-
-The result is stark and model-free: turning on the unbounded physics term moves an infeasible completion from $+10.0$ (indistinguishable from feasible) to $-490.5$ (ranked below every feasible output), and the catch rate goes from 0/5 to 5/5. Because the probe is pure CPU and depends only on the reward, it is fully reproducible in a free-tier notebook and transfers unchanged across model sizes.
 
 \section{Guardrails, Cost, and Small-Scale Eligibility}
 \label{sec:eval}
