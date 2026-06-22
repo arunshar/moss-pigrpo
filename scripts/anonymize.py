@@ -161,18 +161,60 @@ def anon_readme(src_root):
 
 
 def anon_notebook(src_root):
+    """Anonymize the notebook robustly, whatever shape it is in.
+
+    Colab's "Save a copy to GitHub" rewrites the notebook: it adds an Open-In-Colab
+    badge that names the repo, bakes in execution outputs, can drop cells, and adds
+    a metadata.colab block. So we never depend on a specific cell being present. We
+    drop the badge cell, clear every output, strip the Colab metadata, replace the
+    clone-based one-click cell with a no-clone version (or inject that cell if it is
+    missing), and scrub the handle from any remaining source. The --check pass is
+    the final gate, so the build never silently ships an identifier.
+    """
     with open(os.path.join(src_root, "moss_pigrpo_probe.ipynb"), encoding="utf-8") as f:
         nb = json.load(f)
-    swapped = False
+
+    kept = []
+    have_oneclick = False
     for cell in nb.get("cells", []):
         src = "".join(cell.get("source", []))
-        if cell.get("cell_type") == "code" and "ONE-CLICK" in src and "git clone" in src:
-            cell["source"] = ANON_ONECLICK.splitlines(keepends=True)
+        # Drop the Colab badge cell; it embeds the repo path.
+        if cell.get("cell_type") == "markdown" and ("colab-badge.svg" in src or "Open In Colab" in src):
+            continue
+        # No runtime leaks: clear outputs and execution counts on code cells.
+        if cell.get("cell_type") == "code":
             cell["outputs"] = []
             cell["execution_count"] = None
-            swapped = True
-    if not swapped:
-        raise SystemExit("anonymize: could not find the one-click clone cell to replace")
+        # Swap the clone-based one-click cell for the no-clone version; otherwise
+        # scrub the handle from whatever source remains.
+        if cell.get("cell_type") == "code" and "ONE-CLICK" in src and "git clone" in src:
+            cell["source"] = ANON_ONECLICK.splitlines(keepends=True)
+            have_oneclick = True
+        else:
+            cell["source"] = src.replace(HANDLE, "ANONYMOUS").splitlines(keepends=True)
+        kept.append(cell)
+    nb["cells"] = kept
+
+    # Strip Colab-added notebook metadata (provenance, authorship_tag, name).
+    md = nb.get("metadata", {})
+    md.pop("colab", None)
+    md.pop("widgets", None)
+
+    # If no clone-based one-click cell existed, inject the no-clone one right after
+    # the first markdown cell so the convenience path still exists in the mirror.
+    if not have_oneclick:
+        new_cell = {
+            "cell_type": "code", "metadata": {},
+            "execution_count": None, "outputs": [],
+            "source": ANON_ONECLICK.splitlines(keepends=True),
+        }
+        pos = 0
+        for i, c in enumerate(nb["cells"]):
+            if c.get("cell_type") == "markdown":
+                pos = i + 1
+                break
+        nb["cells"].insert(pos, new_cell)
+
     return json.dumps(nb, indent=1, ensure_ascii=False) + "\n"
 
 
