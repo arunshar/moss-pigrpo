@@ -24,7 +24,7 @@ paper is over the 3B cap.
 ## Files
 - `paper.pdf` / `paper.tex` - the 4-page MOSS draft (blind). `moss.bib` - references.
 - Style files: `icml2025.sty`, `MOSS_camera_ready.sty`, `icml2025.bst`, `fancyhdr.sty`, `algorithm.sty`, `algorithmic.sty`. `example_paper.tex/.bib` - the official MOSS template, kept for reference.
-- `moss_pigrpo_probe.ipynb` - free-Colab notebook: reproduces the reward-hacking probe (the main claim) and a small GRPO demo.
+- `moss_pigrpo_probe.ipynb` - free-Colab notebook: reproduces the reward-hacking probe (the main claim) and a small GRPO demo. Its first cell is a one-click `clone + install + run` that prints both tables with no uploads.
 - `run_grpo_local.py` - the GRPO script that produced the measured Table 2 numbers (runs on a laptop in minutes; also runs on Colab). `grpo_results_phys.json` - its output.
 - `COLAB_GUIDE.md` - step-by-step guide to open and run the notebook (and reproduce Table 2) on Google Colab, including the free-tier path.
 - `paper_neurips_standin.tex.bak` - the earlier neurips-format stand-in (superseded).

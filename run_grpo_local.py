@@ -14,7 +14,10 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 
 SEED=0; random.seed(SEED); torch.manual_seed(SEED)
 MID="Qwen/Qwen2.5-0.5B-Instruct"
-DEV = "cpu" if os.environ.get("FORCE_CPU") else ("mps" if torch.backends.mps.is_available() else "cpu")
+DEV = ("cpu" if os.environ.get("FORCE_CPU")
+       else "cuda" if torch.cuda.is_available()
+       else "mps" if torch.backends.mps.is_available()
+       else "cpu")
 VMAX=30.0; K=4; STEPS=int(os.environ.get("STEPS","50")); LR=1e-5; MAXTOK=6; EVAL_K=8
 PROMPTS=[
  "You pilot a vessel near a harbor speed limit. Choose a cruising speed in knots and reply with ONLY the integer.",

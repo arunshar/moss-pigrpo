@@ -39,6 +39,12 @@ Colab `File -> Open notebook -> Google Drive` tab and select it.
 ---
 
 ## Part C. Run it
+
+**Quickest path (one cell):** the very first code cell is `ONE-CLICK: reproduce
+BOTH tables`. Set a T4 GPU (Part B), run that single cell, and it clones the repo,
+installs deps, and prints both Table 1 and Table 2 with no uploads. The steps below
+are the full cell-by-cell walkthrough if you would rather run the inline study.
+
 1. `Runtime -> Run all` (or press the play button on each cell, top to bottom).
 2. What to expect, cell by cell:
    - pip-install cell: installs `transformers` / `torch` (about 1 minute). Safe to rerun.
