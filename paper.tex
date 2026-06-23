@@ -155,7 +155,7 @@ with loss $-\log\sigma(\Delta)$, so $\gamma_{\mathrm{phys}}=0$ recovers vanilla 
 \end{algorithmic}
 \end{algorithm}
 
-\paragraph{The Reward-Hacking Probe}
+\paragraph{The Reward-Hacking Probe.}
 The probe isolates the mechanism without training and without a large model. We construct a small set of completions, some feasible (inside the S-KBM envelope) and some infeasible (a fluent trajectory that exceeds the envelope, e.g.\ speed well above $v_{\max}$), and give each a high preference score, modeling a rater that rewards fluency. We then score them under two reward configurations; Table~\ref{tab:probe} reports the mean total reward on the infeasible completions and the catch rate (the fraction flagged as violations). The result is stark and model-free: turning on the unbounded physics term moves an infeasible completion from $+10.0$ (indistinguishable from feasible) to $-490.5$ (ranked below every feasible output), and the catch rate goes from 0/5 to 5/5. Because the probe is pure CPU and depends only on the reward, it is fully reproducible in a free-tier notebook and transfers unchanged across model sizes.
 
 \begin{table}[t]
