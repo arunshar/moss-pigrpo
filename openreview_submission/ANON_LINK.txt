@@ -1,0 +1,43 @@
+anonymous.4open.science setup helper (MOSS @ COLM 2026)
+========================================================
+
+Goal: a live, browsable, anonymous link to the reproduction code for reviewers,
+as an OPTIONAL supplement to supplement.zip (the zip is the guaranteed-accepted artifact).
+
+Source repository to anonymize:  arunshar/moss-pigrpo-anon
+(Already content-scrubbed; the service also hides the owner account, so the link
+does not reveal which GitHub repo or account it proxies.)
+
+Steps
+-----
+1. Go to https://anonymous.4open.science and sign in with GitHub (your account;
+   reviewers never see it).
+2. Click "Anonymize a repository".
+3. Repository:        arunshar/moss-pigrpo-anon
+4. Anonymous name/id:  moss-pigrpo-probe   (neutral; do not use your name)
+5. Expiration date:    December 2026        (past the July 24 notification, with margin)
+6. Terms to anonymize / replace (add each; replace with "anonymous"):
+       arunshar
+       Arun
+       Sharma
+       sharm485
+       arun08sharma
+       Minnesota
+       UMN
+       Shekhar
+7. Files: include everything.
+8. Create. You get a link of the form  https://anonymous.4open.science/r/<name>/
+
+Verify before you use it
+------------------------
+- Open the link in an incognito / logged-out window and browse it as a reviewer would.
+- Search the notebook, README, and paper for: arunshar, your name, email, Minnesota.
+  Confirm none appear.
+- paper.pdf is a binary file (served as-is, not text-anonymized); it is already
+  anonymized (metadata Author = "Anonymous Authors", footer "Under review.").
+
+Use it
+------
+- Put the  anonymous.4open.science/r/<name>/  link in OpenReview where code links go.
+- Keep uploading supplement.zip as well.
+- Never put the real  github.com/arunshar/...  URL anywhere in the submission.

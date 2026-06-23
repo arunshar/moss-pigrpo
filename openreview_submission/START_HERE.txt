@@ -1,0 +1,28 @@
+MOSS @ COLM 2026 submission bundle
+==================================
+
+Venue:    Methods and Opportunities at Small Scale (MOSS), COLM 2026
+Portal:   https://openreview.net/group?id=colmweb.org/COLM/2026/Workshop/MOSS
+Deadline: June 30, 2026 (AoE)
+Track:    Small-Scale Frontier (4-page main body)
+
+WHAT TO UPLOAD TO OPENREVIEW (folder: UPLOAD_TO_OPENREVIEW/)
+-----------------------------------------------------------
+1. paper.pdf       -> the main submission PDF (4 pages, anonymized).
+2. supplement.zip  -> supplementary artifact (the runnable notebook + code).
+
+That is all that goes to OpenReview. Both files are anonymized and verified clean.
+
+YOUR REFERENCE KIT (folder: reference/) -- do NOT upload these
+--------------------------------------------------------------
+- OPENREVIEW_FORM.md      -> paste-ready Title, Abstract, Keywords, TL;DR, FLOP statement.
+- SUBMISSION_CHECKLIST.md -> full pre-submit checklist and double-blind rules.
+- abstract.txt            -> the abstract as plain text.
+- ANON_LINK.txt           -> optional: how to make a live anonymous.4open.science link.
+
+REMINDERS
+---------
+- Enter your real name/email/affiliation in the OpenReview form fields only
+  (OpenReview hides them from reviewers). Never in the PDF or notebook.
+- Use your institutional (umn.edu) email for the OpenReview profile.
+- Do not paste any github.com/arunshar/... URL in the submission.
