@@ -16,11 +16,13 @@ OpenReview venue: https://openreview.net/group?id=colmweb.org/COLM/2026/Workshop
 Deadline: June 30, 2026 (AoE).
 
 ## Track
-The artifact fits two MOSS tracks; pick one in the form:
-- Free-Tier Colab track (recommended): the notebook runs on a free Colab GPU in
-  minutes, and the Table 1 probe runs on CPU in seconds. This is the strongest fit.
-- Small-Scale Frontier track: 4-page method paper, results on a 0.5B model, soft
-  1e20-FLOP cap. The run uses under 1e15 FLOPs.
+Submit to the **Small-Scale Frontier track**. That track allows a 4-page main body,
+which is exactly what this paper is. The Free-Tier Colab track caps its optional PDF
+write-up at 2 pages, so a 4-page paper does not fit there. The Frontier track wants
+a measured small-scale result with a reported FLOP budget (0.5B GRPO, under 1e15
+FLOPs vs the soft 1e20 cap), and it allows unlimited supplementary material plus an
+optional artifact ZIP, which is where the notebook and code go. The free-Colab
+notebook stays as the reproducibility artifact that reviewers run.
 
 ## Compute statement (for the form, if asked)
 All experiments use under 1e15 FLOPs, far below the 1e20 MOSS cap. The probe is
