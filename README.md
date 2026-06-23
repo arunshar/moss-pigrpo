@@ -1,66 +1,98 @@
-# Physics as a Hard Reward Floor: reproduction package (MOSS @ COLM 2026)
+# Pi-GRPO: Physics as a Hard Reward Floor
 
-This package reproduces the two headline results of the paper:
-- **Table 1**, a model-free reward-hacking probe (CPU, seconds).
-- **Table 2**, a small-scale GRPO run on Qwen2.5-0.5B-Instruct (one GPU, a few minutes).
+## Overview
+**Pi-GRPO** studies an **unbounded hard physics-violation reward term** as a structural
+defense against reward hacking in reinforcement-learning post-training. When a reward
+scores only the surface form of a completion, a fluent but physically impossible output
+can be rewarded by a rater yet is operationally wrong. Pi-GRPO adds an unbounded penalty
+on physical-law violations so that a single sustained violation dominates any bounded
+preference signal, giving the reward a floor that no preference score can lift a violating
+completion above. The same reward plugs into **PPO, DPO, and GRPO**. This repository
+reproduces the paper's two headline results at small scale, under 10^15 FLOPs, in a free
+Google Colab notebook.
 
-Everything runs in a free Google Colab notebook under 10^15 FLOPs, far below the 10^20 cap.
+## Key Contributions
+- **Unbounded hard reward floor:** a physics-violation penalty that is never clipped, with
+  a dominance argument showing one violation cannot be outweighed by any bounded preference term.
+- **Model-free reward-hacking probe:** a CPU-only diagnostic that isolates the failure and
+  its fix without training or a large model.
+- **One reward, three trainers:** a single reward surface shared by PPO, DPO, and GRPO.
+- **Small-scale reproducibility:** a measured GRPO run on Qwen2.5-0.5B-Instruct and a
+  free-Colab notebook, all under the workshop compute budget.
 
-## Reproduce in Google Colab (step by step)
-
-1. Go to https://colab.research.google.com and sign in.
-2. **File -> Upload notebook** and choose `moss_pigrpo_probe.ipynb`.
-3. Open the **Files** sidebar (the folder icon on the left) and upload `run_probe.py`
-   and `run_grpo_local.py` next to the notebook. (Or upload the whole supplement and
-   unzip it in a cell with `!unzip -o supplement.zip`.)
-4. **Runtime -> Change runtime type -> T4 GPU** (the free tier is enough), then **Save**.
-   Table 1 is CPU-only, so you can skip this if you only want the probe.
-5. Run the **first cell** ("ONE-CLICK: reproduce BOTH tables"). It installs the
-   dependencies and runs both scripts end to end. If a cell ever errors on a fresh
-   runtime, use **Runtime -> Restart and run all** once.
-
-That is the whole flow. The cells below the first one are the same study written out
-inline (the S-KBM envelope, the hybrid reward, the probe, and a short GRPO loop), so
-you can read the mechanism step by step if you want.
-
-## What you should see
-
-Table 1, the reward-hacking probe (no GPU needed):
-
+## Requirements
+Pi-GRPO is implemented in **Python (>=3.9)** and **PyTorch**. Key dependencies:
 ```
-reward configuration                 infeasible mean   caught   feasible mean
-preference-only  (w_hard=0)                    +10.0      0/5           +10.0
-physics-grounded (w_hard=5)                   -490.5      5/5           +10.0
+python>=3.9
+torch
+transformers
+accelerate
+numpy
 ```
 
-A preference-only reward cannot tell a physically infeasible completion from a
-feasible one (0 of 5 caught); the unbounded physics term flips every infeasible
-completion below every feasible one (5 of 5 caught).
-
-Table 2, the small-scale GRPO run (hard-violation rate, before -> after training):
-
+## Installation
 ```
-preference-only  (w_hard=0):  0.58 -> 1.00    (training hacks the reward)
-physics-grounded (w_hard=5):  0.50 -> 0.00    (the floor drives violations to zero)
-```
-
-## What is in this package
-
-- `moss_pigrpo_probe.ipynb`, the Colab notebook. Its first cell reproduces both tables;
-  the rest walks through the method.
-- `run_probe.py`, the model-free Table 1 reproduction (CPU, runs in under a second).
-- `run_grpo_local.py`, the GRPO script behind Table 2 (Qwen2.5-0.5B-Instruct). It uses
-  a GPU when one is present and falls back to CPU otherwise.
-- `probe_results.json`, `grpo_results.json`, `grpo_results_phys.json`, the saved outputs.
-- `COLAB_GUIDE.md`, a longer walkthrough with the free-tier path spelled out.
-
-## Run it locally instead
-
-```
+git clone https://github.com/arunshar/moss-pigrpo.git
+cd moss-pigrpo
 pip install torch transformers accelerate
-python run_probe.py                              # Table 1 (CPU, seconds)
-STEPS=40 WHARDS=0.0,5.0 python run_grpo_local.py # Table 2 (uses a GPU if present)
 ```
 
-`run_probe.py` writes `probe_results.json`; `run_grpo_local.py` writes a results JSON
-and prints the base and trained hard-violation rates for each reward configuration.
+## Reproducing the Results
+
+### Table 1: reward-hacking probe (CPU, seconds)
+```
+python run_probe.py
+```
+Scores a preference-only reward against the physics-grounded reward on feasible and
+infeasible completions, prints the mean reward and catch rate, and writes `probe_results.json`.
+
+### Table 2: small-scale GRPO (Qwen2.5-0.5B-Instruct)
+```
+STEPS=40 WHARDS=0.0,5.0 python run_grpo_local.py
+```
+Runs GRPO under two reward configurations and reports the hard-violation rate before and
+after training. Uses a GPU when one is present and falls back to CPU.
+
+### Google Colab
+Open `moss_pigrpo_probe.ipynb` in Colab, set a **T4 GPU**, and run the first cell; it
+installs the dependencies and reproduces both tables. See `COLAB_GUIDE.md` for the
+step-by-step free-tier path.
+
+## Results
+Table 1, reward-hacking probe:
+```
+preference-only  (w_hard=0):  +10.0    0/5 caught
+physics-grounded (w_hard=5):  -490.5   5/5 caught
+```
+Table 2, small-scale GRPO (hard-violation rate, before -> after training):
+```
+preference-only  (w_hard=0):  0.58 -> 1.00   (training hacks the reward)
+physics-grounded (w_hard=5):  0.50 -> 0.00   (the floor drives violations to zero)
+```
+
+## Repository Structure
+```text
+moss-pigrpo/
+├── paper.tex / paper.pdf       # the 4-page paper (ICML / MOSS style)
+├── moss.bib                    # references
+├── moss_pigrpo_probe.ipynb     # Colab notebook: first cell reproduces both tables
+├── run_probe.py                # Table 1, model-free reward-hacking probe (CPU)
+├── run_grpo_local.py           # Table 2, small-scale GRPO on Qwen2.5-0.5B
+├── probe_results.json          # saved Table 1 output
+├── grpo_results.json           # saved Table 2 outputs
+├── COLAB_GUIDE.md              # detailed Colab walkthrough
+└── README.md                   # this file
+```
+
+## Citation
+If you use this work, please cite:
+```bibtex
+@inproceedings{sharma2026pigrpo,
+  title     = {Physics as a Hard Reward Floor: A Small-Scale, Controlled Study of
+               Reward-Hacking Mitigation in RL Post-Training},
+  author    = {Sharma, Arun},
+  booktitle = {Methods and Opportunities at Small Scale (MOSS), Workshop at COLM},
+  year      = {2026},
+  note      = {Under review}
+}
+```
